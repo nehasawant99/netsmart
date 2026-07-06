@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSmart | Your Digital Shield</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="bg-blue-900 text-white shadow-md">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-wide flex items-center gap-2">
+                🛡️ NetSmart
+            </h1>
+            <p class="text-sm bg-blue-800 px-3 py-1 rounded-full text-blue-200 font-medium">
+                Because scammers don't need your password, they need your trust.
+            </p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
+        
+        <!-- Daily Security Tip Hero Section -->
+        <div class="bg-gradient-to-r header-gradient bg-blue-800 text-white rounded-2xl p-6 shadow-lg mb-8">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="text-2xl">💡</span>
+                <h2 class="text-lg font-semibold uppercase tracking-wider text-blue-200">Daily Security Tip</h2>
+            </div>
+            <p id="daily-tip" class="text-xl font-medium">Loading your daily cyber defense strategy...</p>
+        </div>
+
+        <!-- Grid Layout for Main Content -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <!-- Left 2 Columns: Scam Library & Search -->
+            <div class="md:col-span-2 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h2 class="text-2xl font-bold text-gray-900">🚨 Scam Library</h2>
+                    <!-- Real-time Search Box -->
+                    <input type="text" id="search-box" oninput="fetchScams()" placeholder="Search threats (e.g., UPI, email)..." 
+                           class="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64">
+                </div>
+
+                <!-- Dynamic Scams Container -->
+                <div id="scams-container" class="space-y-4">
+                    <!-- Loaded dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Right 1 Column: Interactive Mini Quiz -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-fit">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="text-xl">🎯</span>
+                    <h2 class="text-xl font-bold text-gray-900">Cyber Quiz</h2>
+                </div>
+                <div id="quiz-container">
+                    <!-- Loaded dynamically via JS -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- JavaScript Handling Core Features -->
+    <script>
+        // A massive, diverse array of real-world digital safety tips
+const tips = [
+    "🚨 If someone claims to be an officer putting you under 'Digital Arrest' over video call, hang up immediately. Real police do not investigate via Skype.",
+    "📱 Set your WhatsApp privacy settings so that 'Unknown Contacts' cannot automatically add you to groups without your permission.",
+    "💸 Golden Rule of Payments: You NEVER need to input your UPI PIN or scan a QR code to receive money from someone.",
+    "🔒 Enable Biometric/FaceID locks directly inside your banking and UPI apps to stop unauthorized transfers if your phone is lost or snatched.",
+    "🛑 Received an unexpected parcel SMS with a tracking link? Don't click it. Scammers use fake courier issues to infect your phone or extract personal details.",
+    "💼 A legitimate company offering a remote part-time job will never ask you to transfer funds to buy crypto or upgrade your 'employee level'.",
+    "⚡ Electricity bill threats? Check your provider's official mobile app or physical billing cycle instead of calling a random mobile number from an SMS.",
+    "📶 Turn off auto-connect for public Wi-Fi on your phone. Attackers set up fake network hotspots at cafes to sniff out unencrypted session data.",
+    "🏦 Never search for customer care numbers directly on Google Search results—scammers plant fake phone numbers there. Use the official back of your credit/debit card.",
+    "⚙️ Activate SIM Lock via your phone's settings. This prevents a thief from moving your SIM card into a new device to intercept your banking OTPs.",
+    "👤 Be cautious with social media links offering fake investment tips under celebrity names. Check for verified blue checkmarks on the actual page profile.",
+    "🛡️ Set up an alternate, secondary email address purely for your financial bank accounts, separate from the email you use to sign up for public apps or shopping sites."
+];
+
+        // On Page Load Initialization
+        document.addEventListener("DOMContentLoaded", () => {
+            // Set random daily tip
+            document.getElementById('daily-tip').innerText = tips[Math.floor(Math.random() * tips.length)];
+            
+            // Load DB Content
+            fetchScams();
+            fetchQuiz();
+        });
+
+        // 1. Fetch and Render Scams (Supports real-time search filtering)
+        async function fetchScams() {
+            const searchQuery = document.getElementById('search-box').value;
+            const container = document.getElementById('scams-container');
+            
+            try {
+                const response = await fetch(`/api/scams?search=${encodeURIComponent(searchQuery)}`);
+                const scams = await response.json();
+                
+                if(scams.length === 0) {
+                    container.innerHTML = `<p class="text-gray-500 italic">No threats found matching your query.</p>`;
+                    return;
+                }
+
+                container.innerHTML = scams.map(scam => `
+                    <div class="bg-white p-6 rounded-xl shadow-xs border border-gray-100 hover:border-blue-300 transition-all">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-bold text-gray-900">${scam.title}</h3>
+                            <span class="text-xs font-semibold uppercase px-2 py-1 bg-blue-50 text-blue-700 rounded-md">${scam.category}</span>
+                        </div>
+                        <p class="text-gray-600 mb-3">${scam.description}</p>
+                        <div class="bg-amber-50 border-l-4 border-amber-500 p-3 mb-2 rounded-r-lg">
+                            <strong class="text-amber-800 text-xs uppercase font-bold tracking-wide">⚠️ Warning Signs:</strong>
+                            <p class="text-sm text-gray-700 mt-0.5">${scam.warning_signs}</p>
+                        </div>
+                        <div class="bg-green-50 border-l-4 border-green-500 p-3 rounded-r-lg">
+                            <strong class="text-green-800 text-xs uppercase font-bold tracking-wide">🛡️ How to Stay Safe:</strong>
+                            <p class="text-sm text-gray-700 mt-0.5">${scam.safety_tip}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = `<p class="text-red-500">Error fetching library content.</p>`;
+            }
+        }
+
+        // 2. Fetch and Setup Quiz Data
+        async function fetchQuiz() {
+            const container = document.getElementById('quiz-container');
+            try {
+                const response = await fetch('/api/quiz');
+                const questions = await response.json();
+
+                if(questions.length === 0) {
+                    container.innerHTML = `<p class="text-gray-500">No quizzes available right now.</p>`;
+                    return;
+                }
+
+                // Pick the first available question for the mini app
+                const q = questions[0];
+                
+                container.innerHTML = `
+                    <p class="font-medium text-gray-800 mb-4">${q.question}</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer('A', '${q.correct_option}', '${q.explanation}')" class="w-full text-left px-4 py-2 border.border-gray-200 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors">A) ${q.option_a}</button>
+                        <button onclick="checkAnswer('B', '${q.correct_option}', '${q.explanation}')" class="w-full text-left px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors">B) ${q.option_b}</button>
+                        <button onclick="checkAnswer('C', '${q.correct_option}', '${q.explanation}')" class="w-full text-left px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors">C) ${q.option_c}</button>
+                    </div>
+                    <div id="quiz-feedback" class="mt-4 p-3 rounded-lg hidden text-sm"></div>
+                `;
+            } catch (err) {
+                container.innerHTML = `<p class="text-red-500">Error loading quiz.</p>`;
+            }
+        }
+
+        // 3. Simple Instant Feedback Evaluation
+        function checkAnswer(selected, correct, explanation) {
+            const feedbackBlock = document.getElementById('quiz-feedback');
+            feedbackBlock.classList.remove('hidden', 'bg-green-50', 'text-green-800', 'bg-red-50', 'text-red-800');
+            
+            if (selected === correct) {
+                feedbackBlock.classList.add('bg-green-50', 'text-green-800');
+                feedbackBlock.innerHTML = `<strong>✨ Correct!</strong><p class="mt-1">${explanation}</p>`;
+            } else {
+                feedbackBlock.classList.add('bg-red-50', 'text-red-800');
+                feedbackBlock.innerHTML = `<strong>❌ Incorrect.</strong> Try again! Hint: Look at option ${correct}.`;
+            }
+        }
+    </script>
+</body>
+</html>
