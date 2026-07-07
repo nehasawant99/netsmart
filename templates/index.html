@@ -1,175 +1,481 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetSmart | Your Digital Shield</title>
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetSmart — Threat Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1220;
+    --paper:#F4F5F7;
+    --surface:#FFFFFF;
+    --border:#E3E5EA;
+    --muted:#5B6472;
+    --teal:#0F6E62;
+    --teal-soft:#E5F1EE;
+    --rust:#9A3412;
+    --rust-soft:#FBEBE3;
+    --amber:#8A5A00;
+    --amber-soft:#FBF1DD;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Space Grotesk',sans-serif;
+    letter-spacing:-0.01em;
+  }
+  code, .mono{ font-family:'JetBrains Mono',monospace; }
+
+  a{color:inherit;}
+  .container{max-width:1180px;margin:0 auto;padding:0 20px;}
+
+  /* Header */
+  header{
+    background:var(--ink);
+    color:#F4F5F7;
+    border-bottom:3px solid var(--teal);
+  }
+  header .inner{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; padding:30px 0;
+  }
+  header .brand{display:flex; align-items:center; gap:10px;}
+  header .brand .mark{
+    width:34px;height:34px;border-radius:8px;background:var(--teal);
+    display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;
+  }
+  header h1{font-size:19px; font-weight:700; margin:0; letter-spacing:0.01em;}
+  header p{margin:2px 0 0; font-size:12.5px; color:#9AA3AF;}
+  .badge{
+    font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;
+    background:rgba(15,110,98,0.18); color:#7FD9C8; border:1px solid rgba(127,217,200,0.25);
+    padding:6px 12px; border-radius:999px; white-space:nowrap;
+  }
+
+  /* Layout */
+  main{padding:44px 0 64px;}
+  .layout{display:grid; grid-template-columns:1fr; gap:32px;}
+  @media(min-width:960px){ .layout{grid-template-columns:2.1fr 1fr;} }
+
+  /* Section head */
+  .section-head{margin-bottom:18px;}
+  .section-head h2{font-size:22px; font-weight:700; margin:0 0 4px;}
+  .section-head p{margin:0; font-size:13.5px; color:var(--muted);}
+
+  /* Controls */
+  .controls{
+    display:flex; flex-direction:column; gap:16px; margin-bottom:28px;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px 18px;
+  }
+  .search-wrap{position:relative;}
+  .search-wrap svg{
+    position:absolute; left:13px; top:50%; transform:translateY(-50%);
+    width:16px; height:16px; color:var(--muted); pointer-events:none;
+  }
+  #search-bar{
+    width:100%; padding:11px 14px 11px 38px; font:inherit; font-size:14px;
+    background:var(--paper); border:1px solid var(--border); border-radius:9px;
+    outline:none; transition:border-color .15s, background .15s;
+  }
+  #search-bar:focus{border-color:var(--teal); background:var(--surface);}
+  .chips{display:flex; flex-wrap:wrap; gap:6px; padding-top:2px; border-top:1px solid var(--border);}
+  .chips{padding-top:14px;}
+  .chip{
+    font-size:12.5px; font-weight:500; padding:5px 12px; border-radius:7px;
+    border:1px solid transparent; background:transparent; color:var(--muted);
+    cursor:pointer; transition:all .15s; user-select:none;
+  }
+  .chip:hover{background:var(--paper); color:var(--ink);}
+  .chip.active{background:var(--ink); color:#fff;}
+
+  /* Cards */
+  #threats-grid{display:flex; flex-direction:column; gap:14px;}
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .card-top{padding:18px 20px 14px; display:flex; justify-content:space-between; gap:12px; align-items:flex-start;}
+  .cat-row{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .cat-tag{
+    font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;
+    color:var(--teal); background:var(--teal-soft); padding:3px 9px; border-radius:6px;
+  }
+  .severity{display:flex; align-items:center; gap:4px;}
+  .severity .dot{width:6px;height:6px;border-radius:50%; background:var(--border);}
+  .severity .dot.on{background:var(--rust);}
+  .severity-label{font-size:10.5px; color:var(--muted); font-weight:500; margin-left:4px;}
+  .card h3{font-size:17px; font-weight:700; margin:0;}
+  .card-body{padding:0 20px 20px; display:flex; flex-direction:column; gap:14px;}
+  .desc{font-size:14px; color:#374151; margin:0;}
+
+  .grid-2{display:grid; grid-template-columns:1fr; gap:10px;}
+  @media(min-width:640px){ .grid-2{grid-template-columns:1fr 1fr;} }
+  .info-box{border-left:3px solid; padding:10px 14px; border-radius:0 8px 8px 0; background:#FAFAFB;}
+  .info-box.warn{border-color:var(--amber);}
+  .info-box.example{border-color:#9CA3AF;}
+  .info-box .label{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:4px;}
+  .info-box.warn .label{color:var(--amber);}
+  .info-box.example .label{color:var(--muted);}
+  .info-box p{margin:0; font-size:12.5px; color:#374151;}
+  .info-box.example p{font-family:'JetBrains Mono',monospace; font-style:normal; font-size:11.5px; color:#4B5563;}
+
+  .tip{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--teal-soft); border-radius:8px; padding:11px 14px;
+  }
+  .tip .ic{color:var(--teal); font-size:15px; line-height:1.3;}
+  .tip p{margin:0; font-size:13px; font-weight:600; color:#0B4A41;}
+
+  details{border:1px solid var(--border); border-radius:8px; overflow:hidden;}
+  details[open]{border-color:#D8DBE0;}
+  summary{
+    list-style:none; cursor:pointer; padding:10px 14px; display:flex; justify-content:space-between;
+    align-items:center; font-size:12.5px; font-weight:600; color:var(--ink); background:#FAFAFB;
+  }
+  summary::-webkit-details-marker{display:none;}
+  summary .chev{transition:transform .18s; color:var(--muted); font-size:11px;}
+  details[open] summary .chev{transform:rotate(180deg);}
+  .details-inner{padding:14px; border-top:1px solid var(--border); background:#fff; font-size:12.5px; color:#374151;}
+  .details-inner h4{font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); margin:0 0 8px; font-weight:700;}
+  .details-inner ol{margin:0 0 16px; padding-left:18px;}
+  .details-inner ol li{margin-bottom:5px;}
+  .details-inner .protocol{background:var(--rust-soft); border-radius:6px; padding:10px 12px; color:#6B2210;}
+
+  /* Sidebar */
+  .side{display:flex; flex-direction:column; gap:16px;}
+  @media(min-width:960px){ .side{position:sticky; top:20px; height:fit-content;} }
+  .panel{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px;}
+  .rule-card{background:var(--ink); color:#fff; border:none;}
+  .rule-eyebrow{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#7FD9C8; margin:0 0 8px;}
+  .rule-card h3{font-size:20px; margin:0 0 10px; font-weight:700;}
+  .rule-card p{font-size:13px; color:#C3C8D1; margin:0;}
+
+  .panel h3{font-size:14px; font-weight:700; margin:0 0 14px; display:flex; align-items:center; gap:7px;}
+  .flag-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  .flag-list li{display:flex; gap:9px; align-items:flex-start; font-size:13px; color:#374151;}
+  .flag-list .n{
+    flex-shrink:0; width:18px; height:18px; border-radius:5px; background:var(--rust-soft); color:var(--rust);
+    font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:1px;
+    font-family:'JetBrains Mono',monospace;
+  }
+
+  .never-share{display:flex; flex-wrap:wrap; gap:7px;}
+  .pill{
+    font-size:11.5px; font-weight:600; padding:5px 11px; border-radius:7px;
+    background:var(--rust-soft); color:var(--rust); font-family:'JetBrains Mono',monospace;
+  }
+
+  .empty{
+    background:var(--surface); border:1px dashed var(--border); border-radius:var(--radius);
+    padding:40px 20px; text-align:center; color:var(--muted); font-size:14px;
+  }
+</style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body>
 
-    <!-- Header / Navbar -->
-    <header class="bg-blue-900 text-white shadow-md">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-wide flex items-center gap-2">
-                🛡️ NetSmart
-            </h1>
-            <p class="text-sm bg-blue-800 px-3 py-1 rounded-full text-blue-200 font-medium">
-                Because scammers don't need your password, they need your trust.
-            </p>
+<header>
+  <div class="container inner">
+    <div class="brand">
+      <div>
+        <h1>NetSmart</h1>
+        <p>Scam patterns explained before they cost you anything.</p>
+      </div>
+    </div>
+    <span class="badge">Prevention reference</span>
+  </div>
+</header>
+
+<main class="container">
+  <div class="layout">
+
+    <!-- Threat library -->
+    <div>
+      <div class="section-head">
+        <h2>Active threat library</h2>
+        <p>How each scam actually works, what to watch for, and what to do if it's already happened.</p>
+      </div>
+
+      <div class="controls">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="search-bar" oninput="renderThreats()" placeholder="Search by keyword — UPI, KYC, call, job offer…">
         </div>
-    </header>
+        <div class="chips" id="chip-row"></div>
+      </div>
 
-    <main class="container mx-auto px-4 py-8 max-w-5xl">
-        
-        <!-- Daily Security Tip Hero Section -->
-        <div class="bg-gradient-to-r header-gradient bg-blue-800 text-white rounded-2xl p-6 shadow-lg mb-8">
-            <div class="flex items-center gap-3 mb-2">
-                <span class="text-2xl">💡</span>
-                <h2 class="text-lg font-semibold uppercase tracking-wider text-blue-200">Daily Security Tip</h2>
-            </div>
-            <p id="daily-tip" class="text-xl font-medium">Loading your daily cyber defense strategy...</p>
-        </div>
+      <div id="threats-grid"></div>
+    </div>
 
-        <!-- Grid Layout for Main Content -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
-            <!-- Left 2 Columns: Scam Library & Search -->
-            <div class="md:col-span-2 space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <h2 class="text-2xl font-bold text-gray-900">🚨 Scam Library</h2>
-                    <!-- Real-time Search Box -->
-                    <input type="text" id="search-box" oninput="fetchScams()" placeholder="Search threats (e.g., UPI, email)..." 
-                           class="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64">
-                </div>
+    <!-- Sidebar -->
+    <div class="side">
+      <div class="panel rule-card">
+        <p class="rule-eyebrow">The golden rule</p>
+        <h3>Stop → Verify → Act</h3>
+        <p>Before you send money, click a link, or share a code — hang up and verify through a number or app you looked up yourself, not one they gave you.</p>
+      </div>
 
-                <!-- Dynamic Scams Container -->
-                <div id="scams-container" class="space-y-4">
-                    <!-- Loaded dynamically via JS -->
-                </div>
-            </div>
+      <div class="panel">
+        <h3>🚩 Signs it's a scam</h3>
+        <ul class="flag-list" id="flag-list"></ul>
+      </div>
 
-            <!-- Right 1 Column: Interactive Mini Quiz -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-fit">
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="text-xl">🎯</span>
-                    <h2 class="text-xl font-bold text-gray-900">Cyber Quiz</h2>
-                </div>
-                <div id="quiz-container">
-                    <!-- Loaded dynamically via JS -->
-                </div>
-            </div>
+      <div class="panel">
+        <h3>❌ Never share these</h3>
+        <div class="never-share" id="never-share"></div>
+      </div>
+    </div>
 
-        </div>
-    </main>
+  </div>
+</main>
 
-    <!-- JavaScript Handling Core Features -->
-    <script>
-        // A massive, diverse array of real-world digital safety tips
-const tips = [
-    "🚨 If someone claims to be an officer putting you under 'Digital Arrest' over video call, hang up immediately. Real police do not investigate via Skype.",
-    "📱 Set your WhatsApp privacy settings so that 'Unknown Contacts' cannot automatically add you to groups without your permission.",
-    "💸 Golden Rule of Payments: You NEVER need to input your UPI PIN or scan a QR code to receive money from someone.",
-    "🔒 Enable Biometric/FaceID locks directly inside your banking and UPI apps to stop unauthorized transfers if your phone is lost or snatched.",
-    "🛑 Received an unexpected parcel SMS with a tracking link? Don't click it. Scammers use fake courier issues to infect your phone or extract personal details.",
-    "💼 A legitimate company offering a remote part-time job will never ask you to transfer funds to buy crypto or upgrade your 'employee level'.",
-    "⚡ Electricity bill threats? Check your provider's official mobile app or physical billing cycle instead of calling a random mobile number from an SMS.",
-    "📶 Turn off auto-connect for public Wi-Fi on your phone. Attackers set up fake network hotspots at cafes to sniff out unencrypted session data.",
-    "🏦 Never search for customer care numbers directly on Google Search results—scammers plant fake phone numbers there. Use the official back of your credit/debit card.",
-    "⚙️ Activate SIM Lock via your phone's settings. This prevents a thief from moving your SIM card into a new device to intercept your banking OTPs.",
-    "👤 Be cautious with social media links offering fake investment tips under celebrity names. Check for verified blue checkmarks on the actual page profile.",
-    "🛡️ Set up an alternate, secondary email address purely for your financial bank accounts, separate from the email you use to sign up for public apps or shopping sites."
+<script>
+const THREATS = [
+  {
+    category: "UPI Fraud",
+    severity: 3,
+    title: "The 'wrong' UPI collect request",
+    description: "You get a payment request disguised as a refund or accidental transfer. Approving it — even by mistake — authorizes money to leave your account, not enter it.",
+    steps: [
+      "Scammer sends a UPI collect request labelled as a refund or gift.",
+      "A call or text follows, pressuring you to 'accept' it quickly to receive the money.",
+      "Approving the request (and entering your PIN) sends money out of your account instead.",
+      "Funds are moved through several linked accounts within minutes."
+    ],
+    warning: "Any request that requires your PIN to *receive* money. UPI never asks for a PIN to collect funds.",
+    example: "\"Sir I sent ₹5000 by mistake, please accept the request to return it.\"",
+    tip: "A UPI PIN is only ever needed to send money. Decline any 'accept to receive' request outright.",
+    protocol: "Call your bank's fraud helpline immediately and use the UPI app's 'Report' option on the transaction. File a complaint at cybercrime.gov.in within 24 hours — recovery odds drop fast after that window."
+  },
+  {
+    category: "Impersonation",
+    severity: 3,
+    title: "Fake 'digital arrest' call",
+    description: "Callers pose as police, customs, or RBI officials, claiming a parcel or bank account is linked to a crime, then keep you on a video call to pressure a 'clearance payment'.",
+    steps: [
+      "A call claims your Aadhaar, courier, or SIM is linked to an illegal shipment.",
+      "You're transferred to a fake 'officer' on video, often in uniform.",
+      "You're told to stay on the call and not tell anyone — a 'digital arrest'.",
+      "You're instructed to transfer funds to a 'verification' account to avoid arrest."
+    ],
+    warning: "No Indian agency arrests anyone over a video call or demands money to 'clear' a case.",
+    example: "\"This call is being monitored. Do not disconnect or contact anyone.\"",
+    tip: "Hang up. No real agency conducts arrests or investigations over a phone call.",
+    protocol: "End the call immediately. Report at cybercrime.gov.in or call 1930 (national cyber helpline). Do not transfer any amount, even a small 'verification' sum."
+  },
+  {
+    category: "Remote Access",
+    severity: 3,
+    title: "Fake 'tech support' app install",
+    description: "A caller claims your device or bank app has an error, then walks you through installing a remote-access app that hands them full control of your phone.",
+    steps: [
+      "You get a call or pop-up warning about a virus, KYC issue, or refund.",
+      "You're asked to install a screen-sharing app to 'fix' it.",
+      "The caller can now see your screen, including OTPs and banking apps.",
+      "Money is transferred while you're guided to 'stay on the line'."
+    ],
+    warning: "Any request to install a remote-access or screen-share app during an unsolicited call.",
+    example: "\"Please install this app so our engineer can fix the KYC error on your account.\"",
+    tip: "No bank or telecom company will ever ask you to install remote-access software over the phone.",
+    protocol: "Uninstall the app, put the phone in airplane mode, then call your bank's official number to freeze the account. Change all banking passwords from a different, trusted device."
+  },
+  {
+    category: "Romance / Trust",
+    severity: 2,
+    title: "Long-con romance investment scam",
+    description: "A relationship built over weeks on a dating app or messaging platform eventually pivots to an 'investment opportunity' the other person insists is exclusive and time-limited.",
+    steps: [
+      "A profile builds trust over weeks, often avoiding video calls.",
+      "Conversation shifts to a trading app or crypto platform they 'discovered'.",
+      "Small early withdrawals are allowed to build confidence.",
+      "Larger deposits are then locked behind fake 'taxes' or 'unlocking fees'."
+    ],
+    warning: "Any romantic contact who introduces an investment 'opportunity' and avoids meeting in person or on video.",
+    example: "\"I don't usually tell people about this platform, but I trust you.\"",
+    tip: "Treat any investment tip from an online-only relationship as a red flag, regardless of how convincing the returns look.",
+    protocol: "Stop all payments immediately and preserve chat records as evidence. Report the platform and profile, then file a complaint at cybercrime.gov.in."
+  },
+  {
+    category: "Employment",
+    severity: 2,
+    title: "Pay-to-work job scam",
+    description: "A 'recruiter' offers easy, high-paying remote work — usually reviews or 'task completion' — but requires an upfront deposit that's framed as refundable.",
+    steps: [
+      "You're contacted via WhatsApp about flexible, high-paying part-time work.",
+      "Early 'tasks' pay out small amounts to build trust.",
+      "You're asked to deposit money to unlock bigger-paying task sets.",
+      "Withdrawals are blocked until further deposits are made."
+    ],
+    warning: "Any job that asks you to pay, deposit, or 'unlock levels' before you can withdraw earnings.",
+    example: "\"Complete 3 more tasks to unlock your ₹15,000 withdrawal.\"",
+    tip: "Legitimate employers never require payment from you to start or continue work.",
+    protocol: "Stop depositing immediately. Screenshot all conversations and report the WhatsApp number and platform, then file at cybercrime.gov.in."
+  },
+  {
+    category: "AI-Enabled",
+    severity: 3,
+    title: "AI voice-cloned family emergency",
+    description: "A short clip of a family member's voice, often lifted from social media, is cloned to stage a panicked call asking for urgent money.",
+    steps: [
+      "A few seconds of someone's voice is pulled from public videos or reels.",
+      "AI tools recreate that voice for a live or recorded call.",
+      "The 'family member' claims an accident, arrest, or emergency abroad.",
+      "You're pressured to transfer money before verifying with anyone else."
+    ],
+    warning: "Urgency combined with a request to keep the situation secret from other family members.",
+    example: "\"Mom, please don't tell anyone, just send the money now, I'll explain later.\"",
+    tip: "Hang up and call the person back on their known number before doing anything else.",
+    protocol: "Verify with the person directly or through another family member first. If money was sent, report to your bank immediately and file at cybercrime.gov.in."
+  },
+  {
+    category: "QR / Payment",
+    severity: 2,
+    title: "Malicious QR code swap",
+    description: "QR codes at shops, parking stands, or shared online are replaced with lookalikes that redirect payments to the scammer, or open a page that harvests banking credentials.",
+    steps: [
+      "A genuine-looking QR sticker is pasted over a real one, or shared as an 'offer' online.",
+      "Scanning opens a payment screen or a fake bank login page.",
+      "Entering your PIN or credentials completes a transfer or leaks your login.",
+      "Funds move out before the swap is noticed."
+    ],
+    warning: "A QR sticker that looks slightly misaligned, or one received unsolicited via chat with a 'discount' attached.",
+    example: "\"Scan this QR to get your parking discount instantly.\"",
+    tip: "Confirm the payee name shown after scanning matches the business before entering any PIN.",
+    protocol: "If a wrong-payee transfer completes, contact your bank's fraud line within minutes and report the QR location to local authorities."
+  },
+  {
+    category: "Impersonation",
+    severity: 2,
+    title: "Fake KYC update SMS/call",
+    description: "A message warns your bank account, SIM, or e-wallet will be blocked unless you 'update KYC' through a link or by sharing your card and OTP details.",
+    steps: [
+      "An SMS or call claims your account will be suspended today.",
+      "A link leads to a fake bank page asking for card and OTP details.",
+      "Details entered are captured instantly by the scammer.",
+      "Your real account is drained within minutes using the captured OTP."
+    ],
+    warning: "Any KYC 'update' request that arrives by SMS link rather than through your bank's official app.",
+    example: "\"Your account will be blocked in 24 hours. Update KYC here: [link]\"",
+    tip: "Banks never ask for KYC updates via SMS links. Go to your bank's app or branch directly instead.",
+    protocol: "Do not click the link. If details were entered, call your bank's fraud helpline immediately to block the account."
+  }
 ];
 
-        // On Page Load Initialization
-        document.addEventListener("DOMContentLoaded", () => {
-            // Set random daily tip
-            document.getElementById('daily-tip').innerText = tips[Math.floor(Math.random() * tips.length)];
-            
-            // Load DB Content
-            fetchScams();
-            fetchQuiz();
-        });
+const CATEGORIES = ["All", ...new Set(THREATS.map(t => t.category))];
+let activeCategory = "All";
 
-        // 1. Fetch and Render Scams (Supports real-time search filtering)
-        async function fetchScams() {
-            const searchQuery = document.getElementById('search-box').value;
-            const container = document.getElementById('scams-container');
-            
-            try {
-                const response = await fetch(`/api/scams?search=${encodeURIComponent(searchQuery)}`);
-                const scams = await response.json();
-                
-                if(scams.length === 0) {
-                    container.innerHTML = `<p class="text-gray-500 italic">No threats found matching your query.</p>`;
-                    return;
-                }
+function renderChips(){
+  const row = document.getElementById('chip-row');
+  row.innerHTML = CATEGORIES.map(c =>
+    `<span class="chip ${c === activeCategory ? 'active' : ''}" onclick="setCategory('${c.replace(/'/g,"\\'")}')">${c}</span>`
+  ).join('');
+}
 
-                container.innerHTML = scams.map(scam => `
-                    <div class="bg-white p-6 rounded-xl shadow-xs border border-gray-100 hover:border-blue-300 transition-all">
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="text-lg font-bold text-gray-900">${scam.title}</h3>
-                            <span class="text-xs font-semibold uppercase px-2 py-1 bg-blue-50 text-blue-700 rounded-md">${scam.category}</span>
-                        </div>
-                        <p class="text-gray-600 mb-3">${scam.description}</p>
-                        <div class="bg-amber-50 border-l-4 border-amber-500 p-3 mb-2 rounded-r-lg">
-                            <strong class="text-amber-800 text-xs uppercase font-bold tracking-wide">⚠️ Warning Signs:</strong>
-                            <p class="text-sm text-gray-700 mt-0.5">${scam.warning_signs}</p>
-                        </div>
-                        <div class="bg-green-50 border-l-4 border-green-500 p-3 rounded-r-lg">
-                            <strong class="text-green-800 text-xs uppercase font-bold tracking-wide">🛡️ How to Stay Safe:</strong>
-                            <p class="text-sm text-gray-700 mt-0.5">${scam.safety_tip}</p>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (err) {
-                container.innerHTML = `<p class="text-red-500">Error fetching library content.</p>`;
-            }
-        }
+function setCategory(c){
+  activeCategory = c;
+  renderChips();
+  renderThreats();
+}
 
-        // 2. Fetch and Setup Quiz Data
-        async function fetchQuiz() {
-            const container = document.getElementById('quiz-container');
-            try {
-                const response = await fetch('/api/quiz');
-                const questions = await response.json();
+function severityDots(level){
+  let dots = '';
+  for(let i=1;i<=3;i++){ dots += `<span class="dot ${i<=level?'on':''}"></span>`; }
+  const label = level === 3 ? 'High risk' : level === 2 ? 'Moderate' : 'Low risk';
+  return `<div class="severity">${dots}<span class="severity-label">${label}</span></div>`;
+}
 
-                if(questions.length === 0) {
-                    container.innerHTML = `<p class="text-gray-500">No quizzes available right now.</p>`;
-                    return;
-                }
+function renderThreats(){
+  const q = document.getElementById('search-bar').value.trim().toLowerCase();
+  const container = document.getElementById('threats-grid');
 
-                // Pick the first available question for the mini app
-                const q = questions[0];
-                
-                container.innerHTML = `
-                    <p class="font-medium text-gray-800 mb-4">${q.question}</p>
-                    <div class="space-y-2">
-                        <button onclick="checkAnswer('A', '${q.correct_option}', '${q.explanation}')" class="w-full text-left px-4 py-2 border.border-gray-200 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors">A) ${q.option_a}</button>
-                        <button onclick="checkAnswer('B', '${q.correct_option}', '${q.explanation}')" class="w-full text-left px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors">B) ${q.option_b}</button>
-                        <button onclick="checkAnswer('C', '${q.correct_option}', '${q.explanation}')" class="w-full text-left px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm font-medium transition-colors">C) ${q.option_c}</button>
-                    </div>
-                    <div id="quiz-feedback" class="mt-4 p-3 rounded-lg hidden text-sm"></div>
-                `;
-            } catch (err) {
-                container.innerHTML = `<p class="text-red-500">Error loading quiz.</p>`;
-            }
-        }
+  const filtered = THREATS.filter(t => {
+    const matchesCategory = activeCategory === "All" || t.category === activeCategory;
+    const haystack = (t.title + t.description + t.category).toLowerCase();
+    const matchesSearch = q === "" || haystack.includes(q);
+    return matchesCategory && matchesSearch;
+  });
 
-        // 3. Simple Instant Feedback Evaluation
-        function checkAnswer(selected, correct, explanation) {
-            const feedbackBlock = document.getElementById('quiz-feedback');
-            feedbackBlock.classList.remove('hidden', 'bg-green-50', 'text-green-800', 'bg-red-50', 'text-red-800');
-            
-            if (selected === correct) {
-                feedbackBlock.classList.add('bg-green-50', 'text-green-800');
-                feedbackBlock.innerHTML = `<strong>✨ Correct!</strong><p class="mt-1">${explanation}</p>`;
-            } else {
-                feedbackBlock.classList.add('bg-red-50', 'text-red-800');
-                feedbackBlock.innerHTML = `<strong>❌ Incorrect.</strong> Try again! Hint: Look at option ${correct}.`;
-            }
-        }
-    </script>
+  if(filtered.length === 0){
+    container.innerHTML = `<div class="empty">No threats match that search. Try “UPI”, “call”, or “job”.</div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map((t, i) => `
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <div class="cat-row">
+            <span class="cat-tag">${t.category}</span>
+          </div>
+          <h3>${t.title}</h3>
+        </div>
+        ${severityDots(t.severity)}
+      </div>
+      <div class="card-body">
+        <p class="desc">${t.description}</p>
+
+        <div class="grid-2">
+          <div class="info-box warn">
+            <span class="label">Warning sign</span>
+            <p>${t.warning}</p>
+          </div>
+          <div class="info-box example">
+            <span class="label">Real-world phrasing</span>
+            <p>${t.example}</p>
+          </div>
+        </div>
+
+        <div class="tip">
+          <span class="ic">🛡️</span>
+          <p>${t.tip}</p>
+        </div>
+
+        <details>
+          <summary>
+            <span>How it works &amp; what to do if it happens</span>
+            <span class="chev">▾</span>
+          </summary>
+          <div class="details-inner">
+            <h4>Step by step</h4>
+            <ol>${t.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+            <h4>If you've already been scammed</h4>
+            <div class="protocol">${t.protocol}</div>
+          </div>
+        </details>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderSidebar(){
+  const flags = [
+    "Urgent action demanded — \"do this in the next 10 minutes.\"",
+    "Returns or refunds that look too good to be true.",
+    "Unsolicited links, QR codes, or app-install requests.",
+    "Pressure to keep the conversation secret from family or bank staff.",
+    "Any request for an OTP, PIN, or password over call or chat."
+  ];
+  document.getElementById('flag-list').innerHTML = flags.map((f,i) =>
+    `<li><span class="n">${i+1}</span><span>${f}</span></li>`
+  ).join('');
+
+  const never = ["OTP", "UPI PIN", "Card CVV", "ATM PIN", "Net-banking password", "Aadhaar OTP"];
+  document.getElementById('never-share').innerHTML = never.map(n => `<span class="pill">${n}</span>`).join('');
+}
+
+renderChips();
+renderThreats();
+renderSidebar();
+</script>
 </body>
 </html>
