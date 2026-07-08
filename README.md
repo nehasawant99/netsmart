@@ -75,6 +75,16 @@ http://127.0.0.1:5000
 ```
 
 
+## Screenshot of Netsmart:
+ * DashBoard
+
+<img width="1470" height="800" alt="Screenshot 2026-07-08 at 11 29 23 AM" src="https://github.com/user-attachments/assets/ebcd694c-6e1d-43a3-8ff5-a8d0de89a0b5" />
+
+ * Threat Case
+
+<img width="701" height="553" alt="Screenshot 2026-07-08 at 11 30 37 AM" src="https://github.com/user-attachments/assets/4823218c-ab32-40fe-9131-a1530e05d2a1" />
+
+
 
 ## Development Notes
 
