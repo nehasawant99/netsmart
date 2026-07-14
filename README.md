@@ -84,7 +84,7 @@ http://127.0.0.1:5000
 
 <img width="701" height="553" alt="Screenshot 2026-07-08 at 11 30 37 AM" src="https://github.com/user-attachments/assets/4823218c-ab32-40fe-9131-a1530e05d2a1" />
 
-
+* Live demo: https://netsmart-tqlq.onrender.com/
 
 ## Development Notes
 
